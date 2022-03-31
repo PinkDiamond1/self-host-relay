@@ -1,0 +1,99 @@
+version: '3.9'
+# name: walletconnect
+
+services:
+  prometheus:
+    image: quay.io/prometheus/prometheus:v2.34.0
+    networks:
+      - walletconnect    
+    ports:
+      - 9090:9090      
+    volumes:
+      - prometheus:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s    
+
+  redis_exporter:
+    image: oliver006/redis_exporter:v1.37.0-alpine
+    command:
+      - '--redis.addr=redis://redis:6379'
+    networks:
+      - walletconnect      
+    depends_on:
+      redis:
+        condition: service_healthy          
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.3.1
+    networks:
+      - walletconnect    
+    volumes:
+      # - /:/host:ro,rslave
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro 
+    command:
+      # https://github.com/prometheus/node_exporter#collectors
+       - '--path.rootfs=/host'
+       - '--no-collector.arp'
+       - '--no-collector.bcache'
+       - '--no-collector.bonding'
+       - '--no-collector.conntrack'
+       - '--collector.cpu'
+       - '--collector.cpufreq'
+       - '--collector.diskstats'
+       - '--no-collector.edac'
+       - '--no-collector.entropy'
+       - '--no-collector.filefd'
+       - '--collector.filesystem'
+       - '--no-collector.hwmon'
+       - '--no-collector.infiniband'
+       - '--collector.ipvs'
+       - '--collector.loadavg'
+       - '--no-collector.mdadm'
+       - '--collector.meminfo'
+       - '--no-collector.netclass'
+       - '--no-collector.netdev'
+       - '--collector.netstat'
+       - '--no-collector.nfs'
+       - '--no-collector.nfsd'
+       - '--no-collector.powersupplyclass'
+       - '--no-collector.pressure'
+       - '--no-collector.rapl'
+       - '--no-collector.schedstat'
+       - '--no-collector.sockstat'
+       - '--no-collector.softnet'
+       - '--collector.stat'
+       - '--no-collector.textfile'
+       - '--no-collector.thermal_zone'
+       - '--no-collector.time'
+       - '--no-collector.timex'
+       - '--no-collector.udp_queues'
+       - '--no-collector.uname'
+       - '--collector.vmstat'
+       - '--no-collector.xfs'
+       - '--no-collector.zfs'   
+
+  grafana:
+    image: grafana/grafana:8.4.5
+    networks:
+      - walletconnect    
+    ports:
+      - 3000:3000      
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini      
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    depends_on:
+      prometheus:
+        condition: service_healthy
+
+volumes:
+  grafana:
+  prometheus:
