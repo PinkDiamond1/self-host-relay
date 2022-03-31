@@ -1,0 +1,50 @@
+apiVersion: 1
+
+providers:
+  - name: Container Stats
+    folder: 'WalletConnect'
+    type: file
+    editable: true
+    allowUiUpdates: true
+    options:
+      path:  /var/lib/grafana/dashboards/cadvisor.json
+
+  - name: Docker Metrics
+    folder: 'WalletConnect'
+    type: file
+    editable: true
+    allowUiUpdates: true
+    options:
+      path:  /var/lib/grafana/dashboards/dockermetrics.json
+
+  - name: Host Stats
+    folder: 'WalletConnect'
+    type: file
+    editable: true
+    allowUiUpdates: true
+    options:
+      path:  /var/lib/grafana/dashboards/hoststats.json
+
+  - name: Caddy Stats 
+    folder: 'WalletConnect'
+    type: file
+    editable: true
+    allowUiUpdates: true
+    options:
+      path:  /var/lib/grafana/dashboards/caddy.json
+
+  - name: Redis Stats
+    folder: 'WalletConnect'
+    type: file
+    editable: true
+    allowUiUpdates: true
+    options:
+      path:  /var/lib/grafana/dashboards/redisstats.json
+
+  - name: Relay
+    folder: 'WalletConnect'
+    type: file
+    editable: true
+    allowUiUpdates: true
+    options:
+      path:  /var/lib/grafana/dashboards/relay.json
